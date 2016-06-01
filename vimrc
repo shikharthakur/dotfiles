@@ -12,12 +12,10 @@ set autowriteall
 set autoread
 set incsearch
 set noswapfile
-set background=dark
-set nocp ts=4 sw=4 noet ai cin bs=2 cb=unnamed
+set tabstop=3 softtabstop=3 shiftwidth=3 expandtab
+"set textwidth=160
 set number ruler wrap autoread showcmd showmode fdm=marker nobackup
 set more
-"set tabstop=4 softtabstop=4 shiftwidth=4 expandtab
-"set textwidth=160
 set laststatus=2
 set scrolloff=5
 set guifont=Inconsolata\ for\ Powerline:h18
@@ -31,16 +29,18 @@ set completeopt=menu
 "let base16colorspace=256
 set mouse=a
 set ttymouse=xterm2
-
 if has('gui_running') 
-	colorscheme base16-solarized 
-	let g:airline_theme='base16_solarized'
-	set cursorline
+   set background=light
+   colorscheme papercolor 
+   let g:airline_theme='base16'
+   set cursorline
 else
-	let g:airline_theme='murmur'
+   set background=dark
+   colorscheme papercolor 
+   let g:airline_theme='murmur'
+   set cursorline
 endif
 
-"let g:Powerline_symbols = 'fancy'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "     PLUGINS  "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -48,9 +48,9 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
- " Track the engine.
+" Track the engine.
 Plugin 'SirVer/ultisnips'
- " Snippets are separated from the engine. Add this if you want them:
+" Snippets are separated from the engine. Add this if you want them:
 Plugin 'honza/vim-snippets'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'octol/vim-cpp-enhanced-highlight'
@@ -71,9 +71,9 @@ filetype plugin indent on    " required
 "  KEYMAPS "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let mapleader=","
-"map <F9> :!g++-4.9 -g  % -o %< -DLOCAL_SYS && time ./%< <CR>
+map <D-F9> :!g++-4.9 --std=c++11 -g  % -o %< -DLOCAL_SYS && time ./%< <CR>
 map <F9> :execute '!g++-4.9 --std=c++11 ' . shellescape(join([expand("%:r"),"cpp"],"."),1).
-    \ ' && time ./a.out < '. shellescape(join([expand("%:r"), "in"], "."), 1)<CR>
+         \ ' && time ./a.out < '. shellescape(join([expand("%:r"), "in"], "."), 1)<CR>
 map <F8> :execute "tabnew %:r.in"<CR><C-W>r<CR>
 map <F7> :execute "vs output.txt"<CR>
 map <F2> :w <CR>
@@ -109,15 +109,15 @@ let g:UltiSnipsEditSplit="vertical"
 let g:delimitMate_expand_cr = 1
 
 function! g:UltiSnips_Complete()
-    if pumvisible()
-        return "\<C-n>"
-    else
-        call UltiSnips#JumpForwards()
-        if g:ulti_jump_forwards_res == 0
-            return "\<TAB>"
-        endif
-    endif
-    return ""
+   if pumvisible()
+      return "\<C-n>"
+   else
+      call UltiSnips#JumpForwards()
+      if g:ulti_jump_forwards_res == 0
+         return "\<TAB>"
+      endif
+   endif
+   return ""
 endfunction
 
 au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
@@ -125,26 +125,26 @@ au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=
 " Expand snippet or return
 let g:ulti_expand_res = 0
 function! Ulti_ExpandOrEnter()
-    call UltiSnips#ExpandSnippet()
-    if g:ulti_expand_res
-        return ''
-    else
-        return "\<return>"
-    endfunction
-    " Set <space> as primary trigger
-inoremap <return> <C-R>=Ulti_ExpandOrEnter()<CR>
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" CtrlP settings
-let g:ctrlp_max_files=0
-let g:ctrlp_open_new_file = 't'
-let g:ctrlp_open_multiple_files = 'tj'
-let g:ctrlp_follow_symlinks = 1
-let g:ctrlp_by_filename = 1
-let g:ctrlp_show_hidden = 1
-let g:ctrlp_cmd = 'CtrlPMRU'  "set most recent files as the initial search.
+   call UltiSnips#ExpandSnippet()
+   if g:ulti_expand_res
+      return ''
+   else
+      return "\<return>"
+   endfunction
+   " Set <space> as primary trigger
+   inoremap <return> <C-R>=Ulti_ExpandOrEnter()<CR>
+   """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+   " CtrlP settings
+   let g:ctrlp_max_files=0
+   let g:ctrlp_open_new_file = 't'
+   let g:ctrlp_open_multiple_files = 'tj'
+   let g:ctrlp_follow_symlinks = 1
+   let g:ctrlp_by_filename = 1
+   let g:ctrlp_show_hidden = 1
+   let g:ctrlp_cmd = 'CtrlPMRU'  "set most recent files as the initial search.
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"Airline settings
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
+   """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+   "Airline settings
+   let g:airline_powerline_fonts = 1
+   let g:airline#extensions#tabline#enabled = 1
 
