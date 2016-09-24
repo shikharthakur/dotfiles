@@ -8,7 +8,6 @@ autocmd BufEnter * silent! lcd %:p:h "change working dir to filename's directory
 filetype off                  " required
 au BufWrite *.cpp :Autoformat
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 set nocompatible              " be iMproved, required
 set autowriteall
 set autoread
@@ -18,11 +17,11 @@ set tabstop=3 softtabstop=3 shiftwidth=3 expandtab
 "set textwidth=160
 set clipboard=unnamed " shared OS and vim clipboard
 set number ruler wrap autoread showcmd showmode fdm=marker nobackup
-set showmatch
+set relativenumber
+set showmatch "match brackets
 set more
 set laststatus=2
 set scrolloff=5
-set guifont=Inconsolata\ for\ Powerline:h18
 set splitright
 set encoding=utf-8
 set fillchars+=stl:\ ,stlnc:\
@@ -30,16 +29,18 @@ set termencoding=utf-8
 set completeopt=menu
 set mouse=a
 set ttymouse=xterm2
+set guioptions-=L "get rid of scrollbar in splits
 if has('gui_running')
+   set guifont=Inconsolata\ for\ Powerline:h18
    set background=dark
-   colorscheme base16-eighties
-   let g:airline_theme='base16_eighties'
+   colorscheme base16-flat
+   let g:airline_theme='base16'
    set cursorline
 else
    set term=xterm-256color
    set t_Co=256
    set background=dark
-   colorscheme base16-flat
+   colorscheme base16-eighties
    let g:airline_theme='base16_eighties'
    set cursorline
 endif
@@ -65,8 +66,18 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'chriskempson/base16-vim'
 Plugin 'Raimondi/delimitMate'  "bracket matching.
 Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'xolox/vim-session'
+Plugin 'Yggdroot/indentLine'
+Plugin 'xolox/vim-misc'
 Plugin 'dracula/vim'
+Plugin 'whatyouhide/vim-gotham'
 Plugin 'junegunn/seoul256.vim'
+Plugin 'bcicen/vim-vice'
+Plugin 'YorickPeterse/happy_hacking.vim'
+Plugin 'rakr/vim-two-firewatch'
+Plugin 'lifepillar/vim-wwdc16-theme'
+Plugin 'AlessandroYorba/Sierra'
+Plugin 'sjl/vitality.vim' "cursor in iterm
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -78,26 +89,29 @@ filetype plugin indent on    " required
 let mapleader=","
 map <D-F9> :!clear; g++-4.9 --std=c++11 -g  % -o %< -DLOCAL_SYS && time ./%< <CR>
 map <F9> :execute '!clear; g++-4.9 --std=c++11 ' . shellescape(join([expand("%:r"),"cpp"],"."),1).
-         \ ' && time ./a.out < '. shellescape(join([expand("%:r"), "in"], "."), 1)<CR>
+         \ ' -DLOCAL_SYS && time ./a.out < '. shellescape(join([expand("%:r"), "in"], "."), 1)<CR>
 map <F8> :execute "tabnew %:r.in"<CR><C-W>r<CR>
+map <D-F8> :execute "vs %:r.in"<CR>
 map <F7> :execute "vs output.txt"<CR>
 map <F2> :w <CR>
-
 map <c-k> :NERDTreeToggle<CR>
 map CC <plug>NERDCommenterToggle
 map  :Autoformat<CR>
 inoremap II <Esc>
 "move through tabs easily.
 noremap J :tabprevious<CR>
-nnoremap K :tabnext<CR>
+noremap K :tabnext<CR>
 "Cause 0 and $ are painful
 nnoremap H 0
 nnoremap L $
 vnoremap H 0
 vnoremap L $
+"Change buffers
+noremap BB <c-w>w
 
 command! Dir :cd %:p:h
 command! Refresh :so ~/.vimrc
+command! Xctrlp :CtrlP /Users/shikharthakur/Documents/xcode
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Ultisnips + YCM
@@ -129,22 +143,32 @@ function! Ulti_ExpandOrEnter()
    else
       return "\<return>"
    endfunction
-inoremap <return> <C-R>=Ulti_ExpandOrEnter()<CR>
+   inoremap <return> <C-R>=Ulti_ExpandOrEnter()<CR>
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:delimitMate_expand_cr = 1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" CtrlP settings
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:ctrlp_max_files=0
-let g:ctrlp_open_new_file = 't'
-let g:ctrlp_open_multiple_files = 'tj'
-let g:ctrlp_follow_symlinks = 1
-let g:ctrlp_by_filename = 1
-let g:ctrlp_show_hidden = 1
-let g:ctrlp_cmd = 'CtrlPMRU'  "set most recent files as the initial search.
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"Airline settings
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
+   """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+   let g:delimitMate_expand_cr = 1
+   """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+   " CtrlP settings
+   """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+   let g:ctrlp_max_files=0
+   let g:ctrlp_open_new_file = 't'
+   let g:ctrlp_open_multiple_files = 'tj'
+   let g:ctrlp_follow_symlinks = 1
+   let g:ctrlp_by_filename = 1
+   let g:ctrlp_show_hidden = 1
+   let g:ctrlp_cmd = 'CtrlPMRU'  "set most recent files as the initial search.
+   """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+   "Airline settings
+   """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+   let g:airline_powerline_fonts = 1
+   let g:airline#extensions#tabline#enabled = 1
+   """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+   "Vim-session
+   """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+   let g:session_autosave='yes'
+   let g:session_autoload='yes'
+   let g:session_autosave_periodic=1
+   let g:session_autosave_silent=1
+
+   """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+   let g:indentLine_char = '┆'
